@@ -5,7 +5,7 @@ from main.strategy import Strategy
 import mplfinance as mpf
 import pandas as pd
 from matplotlib import pyplot as plt
-from data.trades import trades
+from data.trades import Trades
 from results.plot import Plot
 from results.evaluate import Evaluate
 import os
@@ -22,7 +22,7 @@ class BackTesting:
         self.num_shares_held_ = 0
         self.funds_ = funds
         # Stores trades made. Initially zero trades made
-        self.trades_= trades()
+        self.trades_= Trades()
         self.output_dir_ = 'out/' + self.stock_name_ + '/' + strategy.get_name() + '/'
 
 

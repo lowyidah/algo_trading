@@ -1,6 +1,6 @@
 import pandas as pd
 
-class trades:
+class Trades:
     def __init__(self, trades: pd.core.frame.DataFrame = pd.DataFrame(columns=["Action", "Number", "Price"], index=pd.to_datetime([]))) -> None:
         # trades is pandas dataframe with columns=["Action", "Number", "Price"] and index=pd.to_datetime([]). DateTimeIndex is timezone naive and in UTC timezone
         # "Action" column can be "buy", "sell", or "hold"
