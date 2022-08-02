@@ -23,7 +23,7 @@ class BackTesting:
         self.funds_ = funds
         # Stores trades made. Initially zero trades made
         self.trades_= trades()
-        self.output_dir_ = 'out/' + self.stock_name_ + '/'
+        self.output_dir_ = 'out/' + self.stock_name_ + '/' + strategy.get_name() + '/'
 
 
     # Iterates through entire historical_bar_data to simulate running of strategy

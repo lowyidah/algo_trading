@@ -18,6 +18,11 @@ class Strategy(ABC):
     def get_action_volume(self, price) -> tuple:
         pass
 
+    # Override this method in actual strategy to define actual strategy name
+    @abstractmethod
+    def get_name(self) -> tuple:
+        pass
+
 
 
 # Define strategies by inheriting from Strategy base class and overidding get_buy_sell_volume() abstract method
@@ -30,5 +35,7 @@ class TestStrategy(Strategy):
         else:
             return "sell", 1
 
+    def get_name(self) -> str:
+        return 'test_strategy'
 
 
