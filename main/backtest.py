@@ -1,29 +1,28 @@
-from cmath import nan
-from datetime import date
 from data.asset_data import BarData, RollingBarData
 from main.strategy import Strategy
-import mplfinance as mpf
-import pandas as pd
-from matplotlib import pyplot as plt
 from data.trades import Trades
 from results.plot import Plot
 from results.evaluate import Evaluate
+from data.data_feeds import DataFetching
+import pandas as pd
 import os
 
 
 # Each BackTesting instance should be used to test a given strategy over a given time period
 class BackTesting:
-    def __init__(self, stock_name: str, historical_bar_data: BarData, strategy: Strategy, funds: float = 0) -> None:
-        self.stock_name_ = stock_name
-        self.historical_bar_data_ = historical_bar_data
+    def __init__(self, ticker: str, strategy: Strategy, data_feed: DataFetching, historical_period: pd.Timedelta, funds: float = 0) -> None:
+        if (historical_period < strategy.get_history_duration()):
+            print("Error: historical_period is less than the history_duration needed for " + strategy.get_name() + " strategy to work")
+        self.ticker_ = ticker
+        self.historical_bar_data_ = data_feed.get_bar_data(ticker, historical_period, strategy.get_interval())
         self.strategy_ = strategy
         # Stores snapshot of bar data at a point in time, initially zero data
-        self.rolling_bar_data_ = RollingBarData(interval=historical_bar_data.get_interval())
+        self.rolling_bar_data_ = RollingBarData(interval=strategy.get_interval())
         self.num_shares_held_ = 0
         self.funds_ = funds
         # Stores trades made. Initially zero trades made
         self.trades_= Trades()
-        self.output_dir_ = 'out/' + self.stock_name_ + '/' + strategy.get_name() + '/'
+        self.output_dir_ = 'out/' + self.ticker_ + '/' + strategy.get_name() + '/'
 
 
     # Iterates through entire historical_bar_data to simulate running of strategy

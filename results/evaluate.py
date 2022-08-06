@@ -1,12 +1,12 @@
 import sys
 from data.asset_data import BarData
-from data.trades import trades
+from data.trades import Trades
 
 
 class Evaluate:
     # type includes 'line', 'candle', 'ohlc', 'line', 'renko', 'pnf'
     # args include 'trades', 
-    def __init__(self, output_dir: str, historical_bar_data: BarData, trades: trades = None, funds: int = 0, *args) -> None:
+    def __init__(self, output_dir: str, historical_bar_data: BarData, trades: Trades = None, funds: int = 0, *args) -> None:
         self.historical_bar_data_ = historical_bar_data
         self.trades_ = trades
         self.funds_ = funds

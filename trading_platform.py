@@ -1,12 +1,14 @@
 import alpaca_trade_api as api
 import os
 from abc import ABC, abstractmethod
-import pandas as pd
 from data.trades import Trades
 
 
 
-class LiveTrade:
+class Platform(ABC):
+    def __init__(self) -> None:
+        super().__init__()
+
     # types: market, limit, stop
     @abstractmethod
     def submit_order(self, symbol: str, qty: int, side: str, type: str = "market", limit_price: float = None, stop_price: float = None):
@@ -19,7 +21,7 @@ class LiveTrade:
 
     # Returns historical Trades of given symbol
     @abstractmethod
-    def get_trades(self, symbol: str) -> Trades:
+    def get_historical_trades(self, symbol: str) -> Trades:
         pass
 
     # Returns number of shares of given symbols held
@@ -27,8 +29,9 @@ class LiveTrade:
         pass
 
 
-class AlpacaTrade(LiveTrade):
+class Alpaca(Platform):
     def __init__(self) -> None:
+        super().__init__()
         api_key = os.environ.get('alpaca_api_key')
         api_secret = os.environ.get('alpaca_api_secret')
         base_url = "https://paper-api.alpaca.markets"

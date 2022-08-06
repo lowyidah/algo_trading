@@ -4,7 +4,7 @@ import pandas as pd
 
 # Base storage class for asset data for a time period
 class BarData:
-    def __init__(self, interval: int = None, price_volume: pd.core.frame.DataFrame = pd.DataFrame(columns=['Open', 'High', 'Low', 'Close', 'Volume'], index=pd.to_datetime([]))) -> None:
+    def __init__(self, interval: pd.Timedelta = None, price_volume: pd.core.frame.DataFrame = pd.DataFrame(columns=['Open', 'High', 'Low', 'Close', 'Volume'], index=pd.to_datetime([]))) -> None:
         # price_volume is pandas dataframe with columns=['Open', 'High', 'Low', 'Close', 'Volume'] and index=pd.to_datetime([]). DateTimeIndex is timezone naive and in UTC timezone
         # To add: check invariant where interval between rows is the same as self.interval_
         self.price_volume_ = price_volume
@@ -12,7 +12,7 @@ class BarData:
         self.interval_ = interval
         
     # Sets interval between time periods in seconds
-    def set_interval(self, interval: int) -> None:
+    def set_interval(self, interval: pd.Timedelta) -> None:
         self.interval_ = interval
 
     # price_volume is pandas dataframe with columns=['Open', 'High', 'Low', 'Close', 'Volume'] and index=pd.to_datetime([]) and sets 
@@ -34,7 +34,7 @@ class BarData:
         return self.price_volume_.iterrows()
 
     # Returns interval between time periods in seconds
-    def get_interval(self) -> int:
+    def get_interval(self) -> pd.Timedelta:
         return self.interval_
 
     # Returns last closing price

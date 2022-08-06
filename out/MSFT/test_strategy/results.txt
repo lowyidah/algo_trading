@@ -1,10 +1,9 @@
-Net worth: -38.01995849609375
-Cash on hand: -316.02996826171875
-Number of shares owned: 1
-Value of shares held: 278.010009765625
-Latest price of share: 278.010009765625
+Net worth: -58.2099609375
+Cash on hand: -58.2099609375
+Number of shares owned: 0
+Value of shares held: 0.0
+Latest price of share: 282.9100036621094
            Action  Number       Price
-2022-07-06    buy       1  266.209991
 2022-07-07    buy       1  268.399994
 2022-07-08   sell       1  267.660004
 2022-07-11   sell       1  264.510010
@@ -23,3 +22,7 @@ Latest price of share: 278.010009765625
 2022-07-28    buy       1  276.410004
 2022-07-29    buy       1  280.739990
 2022-08-01   sell       1  278.010010
+2022-08-02   sell       1  274.820007
+2022-08-03    buy       1  282.470001
+2022-08-04    buy       1  283.649994
+2022-08-05   sell       1  282.910004

@@ -1,13 +1,13 @@
 import mplfinance as mpf
 from data.asset_data import BarData
-from data.trades import trades
+from data.trades import Trades
 from matplotlib import pyplot as plt
 
 
 class Plot:
     # type includes 'line', 'candle', 'ohlc', 'line', 'renko', 'pnf'
     # args include 
-    def __init__(self, output_dir: str, historical_bar_data: BarData, type: str, trades: trades = None, *args) -> None:
+    def __init__(self, output_dir: str, historical_bar_data: BarData, type: str, trades: Trades = None, *args) -> None:
         self.historical_bar_data_ = historical_bar_data
         self.trades_ = trades
         self.additional_plots_ = []
@@ -15,9 +15,6 @@ class Plot:
         # Adding additional plots on to main plot
         if trades:
             self.add_trades()
-        
-        # if "xyz" in args:
-        #     self.add_xyz()
 
         # Plotting and saving graph
         mpf.plot(self.historical_bar_data_.get_price_volume(), type=type, addplot=self.additional_plots_)
