@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from data.asset_data import BarData, RollingBarData
+from data.asset_data import BarData
 import pandas as pd
 
 
@@ -14,7 +14,7 @@ class Strategy(ABC):
         self.history_duration_ = history_duration
 
     # Set any snapshot of rolling_bar_data (ends just before current time period)
-    def set_snapshot(self, rolling_bar_data: RollingBarData, funds: float, num_shares_held: int) -> None:
+    def set_snapshot(self, rolling_bar_data: BarData, funds: float, num_shares_held: int) -> None:
         if rolling_bar_data.get_interval() != self.interval_:
             print("Error: Strategy interval and BarData interval do not match")
         self.rolling_bar_data_ = rolling_bar_data
@@ -28,7 +28,7 @@ class Strategy(ABC):
         return self.history_duration_
 
     # Override this method in actual strategy to define actual strategy
-    # Return format is a tuple("buy" / "sell" / "hold", number of shares)
+    # Return format is a tuple("buy" / "sell" / "hold", number of shares, "market" / "limit" / "stop", limit price, stop price)
     # Decide whether to buy / sell / hold given snapshot (where last entry of rolling_bar_data is one before current time) and current price
     @abstractmethod
     def get_action_volume(self, price) -> tuple:
@@ -48,11 +48,11 @@ class TestStrategy(Strategy):
 
     def get_action_volume(self, price) -> tuple:
         if len(self.rolling_bar_data_) == 0:
-            return "hold", 1
+            return "hold", 1, "market", None, None
         elif price > self.rolling_bar_data_.get_last_closing_price():
-            return "buy", 1
+            return "buy", 1, "market", None, None
         else:
-            return "sell", 1
+            return "sell", 1, "market", None, None
 
     def get_name(self) -> str:
         return 'test_strategy'

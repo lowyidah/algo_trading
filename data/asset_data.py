@@ -25,12 +25,16 @@ class BarData:
     def get_price_volume(self) -> pd.core.frame.DataFrame:
         return self.price_volume_
 
+    # Returns pandas series with labels=['Open', 'High', 'Low', 'Close', 'Volume'] of price_volume_entry at date_time_index
+    def get_price_volume_entry(self, date_time_index: pd.Timestamp) -> pd.Series:
+        return self.price_volume_.loc[date_time_index]
+
     # Returns list of all DateTimes of price_volume entries
     def get_date_times(self) -> list:
         return self.price_volume_.index
 
-    # Returns (DateTimeIndex, pd.Series) pair
-    def get_date_time_price_volume_entry_pair(self) -> tuple:
+    # Returns list of (DateTimeIndex, pd.Series) pairs
+    def get_date_time_price_volume_entry_pairs(self) -> list:
         return self.price_volume_.iterrows()
 
     # Returns interval between time periods in seconds
@@ -45,16 +49,11 @@ class BarData:
     def __len__(self) -> int:
         return self.price_volume_.shape[0]
 
-
-
-
-# Stores asset data up till a time period with the ability to 
-class RollingBarData(BarData):
-    def __init__(self, interval: int, price_volume: pd.core.frame.DataFrame = pd.DataFrame(columns=['Open', 'High', 'Low', 'Close', 'Volume'], index=pd.to_datetime([]))) -> None:
-        super().__init__(interval=interval, price_volume=price_volume)
-
     # price_volumn_entry is a list with ['Open', 'High', 'Low', 'Close', 'Volume'] and 
     # date_time is the index where price_volumn_entry is stored
     # To add: check invariant where interval between rows is the same as self.interval_
     def add_price_volume_entry(self, date_time: pd.Timestamp, price_volumn_entry: list) -> None:
         self.price_volume_.loc[date_time] = price_volumn_entry
+
+
+    

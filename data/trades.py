@@ -26,3 +26,6 @@ class Trades:
     def get_date_time_trade_entry_pair(self) -> tuple:
         return self.trades_.iterrows()
 
+    # Returns DateTimeIndices
+    def get_date_times(self) -> pd.DatetimeIndex:
+        return self.trades_.index

@@ -10,22 +10,23 @@ class Platform(ABC):
         super().__init__()
 
     # types: market, limit, stop
+    # Deletes all existing open orders of given ticker prior to current order being submitted
     @abstractmethod
-    def submit_order(self, symbol: str, qty: int, side: str, type: str = "market", limit_price: float = None, stop_price: float = None):
+    def submit_order(self, ticker: str, qty: int, side: str, type: str = "market", limit_price: float = None, stop_price: float = None):
         pass
 
-    # Returns cash on hand
+    # Returns cash on hand after subtracting unexecuted "buy" orders (aka worst case scenario)
     @abstractmethod
-    def get_funds(self) -> float:
+    def get_funds_guaranteed(self) -> float:
         pass
 
-    # Returns historical Trades of given symbol
+    # Returns Trades of given ticker
     @abstractmethod
-    def get_historical_trades(self, symbol: str) -> Trades:
+    def get_trades(self, ticker: str) -> Trades:
         pass
 
-    # Returns number of shares of given symbols held
-    def get_num_shares(self, symbol: str) -> int:
+    # Returns number of shares of given tickers held (currently owned, not including unexecuted orders "buy" orders but including unexecuted "sell" orders)
+    def get_num_shares_guaranteed(self, ticker: str) -> int:
         pass
 
 
@@ -40,21 +41,50 @@ class Alpaca(Platform):
     # types: market, limit, stop
     # https://alpaca.markets/docs/api-references/trading-api/orders/
     # https://colab.research.google.com/drive/1ofIXDspe4LNXH7CXfArxOZuIOoAg1Uak?usp=sharing#scrollTo=Xy5Syxraoa5p
-    def submit_order(self, symbol: str, qty: int, side: str, type: str = "market", limit_price: float = None, stop_price: float = None):
-        self.alpaca_.submit_order(symbol, qty=qty, side=side, type=type, limit_price=limit_price, stop_price=stop_price)
-
-    def get_funds(self) -> float:
-        account = self.alpaca_.get_account()
-        return account['cash']
-
-    def get_trades(self, symbol: str) -> Trades:
-        trades = Trades()
-        orders = self.alpaca_.get_orders()
+    # https://pypi.org/project/alpaca-trade-api/
+    def submit_order(self, ticker: str, qty: int, side: str, type: str = "market", limit_price: float = None, stop_price: float = None):
+        # Cancel all open orders of given ticker
+        order_ids = []
+        orders = self.alpaca_.list_orders(status='open', symbols=[ticker])
         for order in orders:
-            if order['filled_at'] and order['symbol'] == symbol:
-                trades.add_trade(order['filled_at'], order['side'], order['filled_qty'], order['filled_avg_price'])
+            order_ids.append(order['order_id'])
+        for order_id in order_ids:
+            self.alpaca_.cancel_order(order_id)
+
+        # Place new order
+        self.alpaca_.submit_order(ticker, qty=qty, side=side, type=type, limit_price=limit_price, stop_price=stop_price)
+
+    def get_funds_guaranteed(self) -> float:
+        _, value_of_open_buy_orders = self.get_open_order_info('buy')
+        account = self.alpaca_.get_account()
+        return (account['cash'] - value_of_open_buy_orders)
+
+    def get_trades(self, ticker: str) -> Trades:
+        trades = Trades()
+        # list_orders(status=None, limit=None, after=None, until=None, direction=None, params=None,nested=None, symbols=None, side=None)
+        orders = self.alpaca_.list_orders(status='closed', symbols=[ticker])
+        for order in orders:
+            trades.add_trade(order['filled_at'], order['side'], order['filled_qty'], order['filled_avg_price'])
         return trades
 
-    def get_num_shares(self, symbol: str) -> int:
-        position = self.alpaca_.get_position(symbol)
-        return position['qty_available']
+    def get_num_shares_guaranteed(self, ticker: str) -> int:
+        quantity_of_open_orders, _ = self.get_open_order_info('sell', [ticker])
+        position = self.alpaca_.get_position(ticker)
+        return (position['qty_available'] - quantity_of_open_orders)
+
+    # Private 
+    
+    # Filters orders by side ("buy" / "sell")
+    # Only works for stop orders or limit orders
+    # Returns quantity of open orders and value of open orders
+    def get_open_order_info(self, side: str, tickers_list: list = None) -> tuple:
+        orders = self.alpaca_.list_orders(status='open', symbols=tickers_list, side=side)
+        quantity = 0
+        value = 0
+        for order in orders:
+            quantity += (order['qty'] - order['filled_qty'])
+            if order['type'] == 'limit':
+                value += order['limit_price']
+            elif order['type'] == 'stop':
+                value += order['stop_price']
+        return quantity, value 

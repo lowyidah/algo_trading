@@ -1,4 +1,4 @@
-from data.asset_data import BarData, RollingBarData
+from data.asset_data import BarData
 from main.strategy import Strategy
 from data.trades import Trades
 from results.plot import Plot
@@ -17,21 +17,22 @@ class BackTesting:
         self.historical_bar_data_ = data_feed.get_bar_data(ticker, historical_period, strategy.get_interval())
         self.strategy_ = strategy
         # Stores snapshot of bar data at a point in time, initially zero data
-        self.rolling_bar_data_ = RollingBarData(interval=strategy.get_interval())
+        self.rolling_bar_data_ = BarData(interval=strategy.get_interval())
         self.num_shares_held_ = 0
         self.funds_ = funds
         # Stores trades made. Initially zero trades made
         self.trades_= Trades()
-        self.output_dir_ = 'out/' + self.ticker_ + '/' + strategy.get_name() + '/'
+        self.output_dir_ = 'out/backtest/' + self.ticker_ + '/' + strategy.get_name() + '/'
 
 
     # Iterates through entire historical_bar_data to simulate running of strategy
     def run(self) -> None:
-        for date_time, price_volume_entry in self.historical_bar_data_.get_date_time_price_volume_entry_pair():
+        for date_time, price_volume_entry in self.historical_bar_data_.get_date_time_price_volume_entry_pairs():
             current_price = price_volume_entry['Close']
             # Execute strategy at given point in time with given price
             self.strategy_.set_snapshot(self.rolling_bar_data_, self.funds_, self.num_shares_held_)
-            action, num_shares = self.strategy_.get_action_volume(current_price)
+            # To do: simulate changing prices that are independent form last price and take into account order_type
+            action, num_shares, order_type, limit_price, stop_price = self.strategy_.get_action_volume(current_price)
             if action == "buy":
                 self.num_shares_held_ += num_shares
                 self.funds_ -= current_price * num_shares

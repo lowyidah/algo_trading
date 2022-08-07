@@ -14,13 +14,13 @@ class DataFetching(ABC):
     # Valid intervals are pd.Timedelta corresponding to: 1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk
     # Valid periods are pd.Timedelta corresponding to: 1d, 5d, 1mo, 3mo, 6mo, 1y, 2y, 5y, 10y, ytd, max
     @abstractmethod
-    def get_bar_data(self, ticker: str, period: pd.Timedelta, interval: pd.Timedelta) -> pd.core.frame.DataFrame:
+    def get_bar_data(self, ticker: str, period: pd.Timedelta, interval: pd.Timedelta) -> BarData:
         pass
 class YahooData(DataFetching):
     def __init__(self) -> None:
         super().__init__()
 
-    def get_bar_data(self, ticker: str, period: pd.Timedelta, interval: pd.Timedelta) -> pd.core.frame.DataFrame:
+    def get_bar_data(self, ticker: str, period: pd.Timedelta, interval: pd.Timedelta) -> BarData:
         asset = yf.Ticker(ticker)
         hist = asset.history(period=self.timedelta_to_str_periods(period), interval=self.timedelta_to_str_intervals(interval))
 
