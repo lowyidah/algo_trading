@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from data.asset_data import BarData
+from data_structs.asset_data import BarData
 import pandas as pd
 
 

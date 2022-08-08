@@ -2,7 +2,7 @@ import alpaca_trade_api as api
 from alpaca_trade_api.stream import Stream
 import os
 from abc import ABC, abstractmethod
-from data.trades import Trades
+from data_structs.trades import Trades
 
 
 

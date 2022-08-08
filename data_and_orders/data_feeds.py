@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from nis import match
 import yfinance as yf
 import pandas as pd
-from data.asset_data import BarData
+from data_structs.asset_data import BarData
 from abc import ABC, abstractmethod
 
 

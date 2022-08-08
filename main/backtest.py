@@ -1,9 +1,9 @@
-from data.asset_data import BarData
+from data_structs.asset_data import BarData
 from main.strategy import Strategy
-from data.trades import Trades
+from data_structs.trades import Trades
 from results.plot import Plot
 from results.evaluate import Evaluate
-from data.data_feeds import DataFetching
+from data_and_orders.data_feeds import DataFetching
 import pandas as pd
 import os
 

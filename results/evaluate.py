@@ -1,6 +1,6 @@
 import sys
-from data.asset_data import BarData
-from data.trades import Trades
+from data_structs.asset_data import BarData
+from data_structs.trades import Trades
 
 
 class Evaluate:

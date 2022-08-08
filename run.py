@@ -1,8 +1,8 @@
-from data.data_feeds import YahooData
+from data_and_orders.data_feeds import YahooData
 from main.strategy import TestStrategy
 from main.backtest import BackTesting
 from main.trading import Trading
-from data.trading_platform import Alpaca
+from data_and_orders.trading_platform import Alpaca
 import pandas as pd
 
 def main():
