@@ -20,7 +20,6 @@ class Trading:
         self.rolling_bar_data_ = data_feed.get_bar_data(ticker, strategy.get_history_duration(), strategy.get_interval())
         self.output_dir_ = 'out/live/' + self.ticker_ + '/' + strategy.get_name() + '/'
 
-
     # Iterates through entire historical_bar_data to simulate running of strategy
     def run(self) -> None:
         while True:
@@ -32,20 +31,25 @@ class Trading:
             last_date_time = self.rolling_bar_data_.get_date_times()[-1]
             if most_recent_date_time > last_date_time:
                 self.rolling_bar_data_.add_price_volume_entry(most_recent_date_time, most_recent_price_volume_entry)
+                # If executed an order at last price volume entry, do not continue to execute strategy
+                # Ensures that for any given point in time specified by self.strategy_.get_interval(), only executes one trade
+                executed_order_at_latest_price_volume_entry = False
             else:
-                # sleep()
-                break
+                if (executed_order_at_latest_price_volume_entry):
+                    break
+                    # sleep()
             
             # If reach this point, latest price_volume_entry in self.rolling_bar_data_ is new (unseen before)
-            # To do: update current_price
-            current_price = self.rolling_bar_data_.get_last_closing_price()
+            current_price = self.trading_platform_.get_last_traded_price(self.ticker_)
             # Execute strategy at given point in time with given price
             self.strategy_.set_snapshot(self.rolling_bar_data_, self.trading_platform_.get_funds_guaranteed(), self.trading_platform_.get_num_shares_guaranteed())
             action, num_shares, order_type, limit_price, stop_price = self.strategy_.get_action_volume(current_price)
             if action == "buy":
                 self.trading_platform_.submit_order(self.ticker_, num_shares, "buy", order_type, limit_price, stop_price)
+                executed_order_at_latest_price_volume_entry = True
             elif action == "sell":
                 self.trading_platform_.submit_order(self.ticker_, num_shares, "sell",  order_type, limit_price, stop_price)
+                executed_order_at_latest_price_volume_entry = True
             elif action == "hold":
                 pass
             else:

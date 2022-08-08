@@ -30,6 +30,7 @@ class Strategy(ABC):
     # Override this method in actual strategy to define actual strategy
     # Return format is a tuple("buy" / "sell" / "hold", number of shares, "market" / "limit" / "stop", limit price, stop price)
     # Decide whether to buy / sell / hold given snapshot (where last entry of rolling_bar_data is one before current time) and current price
+    # Only one trade will be executed per self.interval_
     @abstractmethod
     def get_action_volume(self, price) -> tuple:
         pass
