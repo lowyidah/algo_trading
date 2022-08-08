@@ -1,4 +1,4 @@
-from trading_platform import Platform
+from data.trading_platform import Platform
 from data.asset_data import BarData
 from main.strategy import Strategy
 from data.trades import Trades
